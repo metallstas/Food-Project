@@ -184,6 +184,10 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    fetch('db.json')
+        .then(data => data.json())
+        .then(res => console.log(res))
+
     new Menu(
         'img/tabs/vegy.jpg',
         'vegy',
@@ -240,10 +244,6 @@ window.addEventListener('DOMContentLoaded', () => {
             statusMessage.src = message.loading
             form.insertAdjacentElement('afterend', statusMessage)
 
-            const request = new XMLHttpRequest()
-            request.open('POST', 'server.php')
-
-            request.setRequestHeader('Content-type', 'application/json')
             const formData = new FormData(form)
 
             const dataUser = {}
@@ -256,16 +256,21 @@ window.addEventListener('DOMContentLoaded', () => {
 
             const json = JSON.stringify(dataUser)
 
-            request.send(json)
-            request.addEventListener('load', () => {
-                if (request.status === 200) {
-                    console.log(request.response)
-                    showThanksModal(message.success)
-                    form.reset()
-                    statusMessage.remove()
-                } else {
-                    showThanksModal(message.failure)
-                }
+            fetch('server.php', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: json,
+            }).then(data => data.text())
+            .then(data => {
+                console.log(data)
+                showThanksModal(message.success)
+                statusMessage.remove()
+            }).catch(() => {
+                showThanksModal(message.failure)
+            }).finally(() => {
+                form.reset()
             })
         })
      }
