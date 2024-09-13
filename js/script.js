@@ -184,42 +184,23 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    fetch('db.json')
-        .then(data => data.json())
-        .then(res => console.log(res))
+    const getResourse = async (url) => {
+        const res = await fetch(url)
 
-    new Menu(
-        'img/tabs/vegy.jpg',
-        'vegy',
-        'Меню "Фитнес"',
-        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-        229,
-        '.menu__field .container',
-        //'menu__item'
+        if (!res.ok) {
+            throw new Error(`Could not fetch ${url}, status: ${res.status}`)
+        }
 
-     ).create()
+        return await res.json()
+    }
+    
+    getResourse('http://localhost:3000/menu')
+        .then(data => {
+            data.forEach(({img, altimg, title, descr, price}) => {
+                new Menu(img, altimg, title, descr, price, '.menu .container').create()
+            })
+        })
 
-     new Menu(
-        'img/tabs/elite.jpg',
-        'elite',
-        'Меню “Премиум”',
-        'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-        550,
-        '.menu__field .container',
-        'menu__item'
-
-     ).create()
-
-     new Menu(
-        'img/tabs/post.jpg',
-        'post',
-        'Меню "Постное"',
-        'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-        430,
-        '.menu__field .container',
-        'menu__item'
-
-     ).create()
 
      //Forms
 
@@ -232,10 +213,22 @@ window.addEventListener('DOMContentLoaded', () => {
      const forms = document.querySelectorAll('form')
 
      forms.forEach(form => {
-        postData(form)
+        bindPostData(form)
      })
 
-     function postData(form) {
+     const postData = async (url, data) => {
+        const res = await fetch(url, {
+            method: "POST",
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: data
+        })
+
+        return await res.json()
+     }
+
+     function bindPostData(form) {
         form.addEventListener('submit', e => {
             e.preventDefault()
             
@@ -246,29 +239,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
             const formData = new FormData(form)
 
-            const dataUser = {}
-            console.log(formData)
-            formData.forEach((value, key) => {
-                dataUser[key] = value
-            })
+            const json = JSON.stringify(Object.fromEntries(formData.entries()))
 
-            console.log(dataUser)
-
-            const json = JSON.stringify(dataUser)
-
-            fetch('server.php', {
-                method: 'POST',
-                headers: {
-                    'Content-type': 'application/json'
-                },
-                body: json,
-            }).then(data => data.text())
+            postData('http://localhost:3000/requests', json)
             .then(data => {
-                console.log(data)
+                console.log('post', data)
                 showThanksModal(message.success)
                 statusMessage.remove()
-            }).catch(() => {
+            }).catch((err) => {
                 showThanksModal(message.failure)
+                console.log('ERROR', err)
             }).finally(() => {
                 form.reset()
             })
@@ -298,5 +278,53 @@ window.addEventListener('DOMContentLoaded', () => {
             closeModal()
         }, 4000)
     }
+
+    //Slider
+
+    const prev = document.querySelector('.offer__slider-prev'),
+          next = document.querySelector('.offer__slider-next'),
+          counterCurrent = document.querySelector('#current'),
+          counterTotal = document.querySelector('#total'),
+          slides = document.querySelectorAll('.offer__slide')
+
+
+    let indexSlide = 0
+
+    console.log(slides)
+
+    const changeSlide = (index) => {
+        console.log(index)
+        slides.forEach((el, i) => {
+            if (index > slides.length) {
+                index = 0
+            }
+            if (index < 0) {
+                index = slides.length - 1
+            }
+            console.log('index2', index)
+            if (index !== i) {
+                el.classList.add('hide')
+            }
+            if (index === i) {
+                el.classList.add('show')
+                el.classList.remove('hide')
+            }
+        })
+    }
+
+    changeSlide(indexSlide)
+
+    next.addEventListener('click', e => {
+        ++indexSlide
+        changeSlide(indexSlide)
+        
+    })
+
+    prev.addEventListener('click', e => {
+        --indexSlide
+        changeSlide(indexSlide)
+        
+    })
+    
 
 })
