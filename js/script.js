@@ -283,25 +283,33 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const prev = document.querySelector('.offer__slider-prev'),
           next = document.querySelector('.offer__slider-next'),
-          counterCurrent = document.querySelector('#current'),
-          counterTotal = document.querySelector('#total'),
+          currentSlide = document.querySelector('#current'),
+          totalSlides = document.querySelector('#total'),
           slides = document.querySelectorAll('.offer__slide')
 
 
     let indexSlide = 0
 
-    console.log(slides)
+    const counterTotal = () => {
+        if (slides.length < 10) {
+            return `0${slides.length}`
+        }
+
+        return slides.length
+    }
+    
+    const counterCurrent = (index) => {
+        if (index < 10) {
+            return `0${index + 1}`
+        }
+        return index + 1
+    }
+
+    totalSlides.textContent = counterTotal()
 
     const changeSlide = (index) => {
-        console.log(index)
+        currentSlide.textContent = counterCurrent(index)
         slides.forEach((el, i) => {
-            if (index > slides.length) {
-                index = 0
-            }
-            if (index < 0) {
-                index = slides.length - 1
-            }
-            console.log('index2', index)
             if (index !== i) {
                 el.classList.add('hide')
             }
@@ -316,12 +324,18 @@ window.addEventListener('DOMContentLoaded', () => {
 
     next.addEventListener('click', e => {
         ++indexSlide
+        if (indexSlide > slides.length - 1) {
+            indexSlide = 0
+        }
         changeSlide(indexSlide)
         
     })
 
     prev.addEventListener('click', e => {
         --indexSlide
+        if (indexSlide < 0) {
+            indexSlide = slides.length - 1
+        }
         changeSlide(indexSlide)
         
     })
