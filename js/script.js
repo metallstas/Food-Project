@@ -285,60 +285,115 @@ window.addEventListener('DOMContentLoaded', () => {
           next = document.querySelector('.offer__slider-next'),
           currentSlide = document.querySelector('#current'),
           totalSlides = document.querySelector('#total'),
-          slides = document.querySelectorAll('.offer__slide')
+          slides = document.querySelectorAll('.offer__slide'),
+          slidesWrapper = document.querySelector('.offer__slider-wrapper'),
+          slidesField = document.querySelector('.offer__slider-inner'),
+          width = window.getComputedStyle(slidesWrapper).width,
+          slider = document.querySelector('.offer__slider')
 
 
     let indexSlide = 0
+    let offset = 0
+    const dots = []
 
-    const counterTotal = () => {
-        if (slides.length < 10) {
-            return `0${slides.length}`
-        }
-
-        return slides.length
-    }
+    if (slides.length < 10) {
+        totalSlides.textContent = `0${slides.length}`
+    } else {
+        totalSlides.textContent = slides.length    
+    }   
     
     const counterCurrent = (index) => {
         if (index < 10) {
-            return `0${index + 1}`
+            currentSlide.textContent = `0${index + 1}`
         }
-        return index + 1
+        else {
+            currentSlide.textContent = index + 1
+        }
     }
 
-    totalSlides.textContent = counterTotal()
+    counterCurrent(indexSlide)
 
-    const changeSlide = (index) => {
-        currentSlide.textContent = counterCurrent(index)
-        slides.forEach((el, i) => {
-            if (index !== i) {
-                el.classList.add('hide')
-            }
-            if (index === i) {
-                el.classList.add('show')
-                el.classList.remove('hide')
-            }
-        })
-    }
+    slidesField.style.width = 100 * slides.length + '%'
+    slidesField.style.display = 'flex'
+    slidesField.style.transition = '0.5s all'
 
-    changeSlide(indexSlide)
+    slides.forEach(el => {
+        el.style.width = width     
+    })
 
     next.addEventListener('click', e => {
-        ++indexSlide
+        if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) {
+            offset = 0
+        } else {
+            offset += +width.slice(0, width.length - 2)
+        }
+
+        indexSlide++
         if (indexSlide > slides.length - 1) {
             indexSlide = 0
         }
-        changeSlide(indexSlide)
-        
+        counterCurrent(indexSlide)
+        slidesField.style.transform = `translateX(-${offset}px)`
+
+        dots.forEach(dot => dot.style.opacity = '.5')
+        dots[indexSlide].style.opacity = 1
     })
 
     prev.addEventListener('click', e => {
-        --indexSlide
-        if (indexSlide < 0) {
+        if (offset == 0) {
+            offset = +width.slice(0, width.length - 2) * (slides.length - 1)
+        } else {
+            offset -= +width.slice(0, width.length - 2)
+        }
+        indexSlide--
+              if (indexSlide < 0) {
             indexSlide = slides.length - 1
         }
-        changeSlide(indexSlide)
+        counterCurrent(indexSlide)
+        slidesField.style.transform = `translateX(-${offset}px)`
         
+        dots.forEach(dot => dot.style.opacity = '.5')
+        dots[indexSlide].style.opacity = 1
     })
-    
+
+    function createDot() {
+        const dotWrapper = document.createElement('ol')
+        dotWrapper.classList.add('dot__wrapper')
+
+        slides.forEach((el, i) => {
+            const dot = document.createElement('li')
+            dot.setAttribute('data-slide-to', i)
+            dot.classList.add('dot')
+            dotWrapper.append(dot) 
+
+            if (indexSlide === i) {
+                dot.style.opacity = '1'
+            }
+            dots.push(dot)
+        })
+
+        slider.append(dotWrapper)
+        
+
+    }
+
+    createDot()
+
+    dots.forEach(dot => {
+        dot.addEventListener('click', e => {
+            const slideTo = e.target.getAttribute('data-slide-to')
+            console.log(slideTo)
+            indexSlide = +slideTo
+            offset = +width.slice(0, width.length - 2) * (slideTo)
+
+            slidesField.style.transform = `translateX(-${offset}px)`
+
+            counterCurrent(indexSlide)
+
+            dots.forEach(dot => dot.style.opacity = '.5')
+            dots[indexSlide].style.opacity = 1
+
+        })
+    })
 
 })
