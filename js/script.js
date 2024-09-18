@@ -296,6 +296,8 @@ window.addEventListener('DOMContentLoaded', () => {
     let offset = 0
     const dots = []
 
+    const getOnlyNum = str => +str.replace(/\D/g, '')
+
     if (slides.length < 10) {
         totalSlides.textContent = `0${slides.length}`
     } else {
@@ -321,11 +323,16 @@ window.addEventListener('DOMContentLoaded', () => {
         el.style.width = width     
     })
 
+    function setActiveDot(activeIndex) {
+        dots.forEach(dot => dot.style.opacity = '.5')
+        dots[activeIndex].style.opacity = 1
+    }
+
     next.addEventListener('click', e => {
-        if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) {
+        if (offset == getOnlyNum(width) * (slides.length - 1)) {
             offset = 0
         } else {
-            offset += +width.slice(0, width.length - 2)
+            offset += getOnlyNum(width)
         }
 
         indexSlide++
@@ -335,15 +342,14 @@ window.addEventListener('DOMContentLoaded', () => {
         counterCurrent(indexSlide)
         slidesField.style.transform = `translateX(-${offset}px)`
 
-        dots.forEach(dot => dot.style.opacity = '.5')
-        dots[indexSlide].style.opacity = 1
+        setActiveDot(indexSlide)
     })
 
     prev.addEventListener('click', e => {
         if (offset == 0) {
-            offset = +width.slice(0, width.length - 2) * (slides.length - 1)
+            offset = getOnlyNum(width) * (slides.length - 1)
         } else {
-            offset -= +width.slice(0, width.length - 2)
+            offset -= getOnlyNum(width)
         }
         indexSlide--
               if (indexSlide < 0) {
@@ -352,8 +358,7 @@ window.addEventListener('DOMContentLoaded', () => {
         counterCurrent(indexSlide)
         slidesField.style.transform = `translateX(-${offset}px)`
         
-        dots.forEach(dot => dot.style.opacity = '.5')
-        dots[indexSlide].style.opacity = 1
+        setActiveDot(indexSlide)
     })
 
     function createDot() {
@@ -381,17 +386,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
     dots.forEach(dot => {
         dot.addEventListener('click', e => {
-            const slideTo = e.target.getAttribute('data-slide-to')
-            console.log(slideTo)
-            indexSlide = +slideTo
-            offset = +width.slice(0, width.length - 2) * (slideTo)
-
+            const slideTo = +e.target.getAttribute('data-slide-to')
+            indexSlide = slideTo
+            offset = getOnlyNum(width) * (slideTo)
             slidesField.style.transform = `translateX(-${offset}px)`
 
             counterCurrent(indexSlide)
-
-            dots.forEach(dot => dot.style.opacity = '.5')
-            dots[indexSlide].style.opacity = 1
+            setActiveDot(indexSlide)
 
         })
     })
