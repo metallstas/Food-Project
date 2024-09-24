@@ -1,6 +1,4 @@
-function timer() {
-    const deadLine = '2024-10-20'
-
+function timer(id, deadLine) {
     const getTimeRemaning = (endTime) => {
         let days, hours, minutes, seconds
 
@@ -60,7 +58,7 @@ function timer() {
         }
     }
 
-    setClock('.timer', deadLine)
+    setClock(id, deadLine)
 }
 
 export default timer
