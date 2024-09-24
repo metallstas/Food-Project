@@ -1,12 +1,10 @@
-'use strict'
-
-import tabs from './modules/tabs'
-import timer from './modules/timer'
-import modal from './modules/modal'
-import slider from './modules/slider'
-import calc from './modules/calc'
-import cards from './modules/cards'
-import forms from './modules/forms'
+import tabs from './modules/tabs.js'
+import timer from './modules/timer.js'
+import modal from './modules/modal.js'
+import slider from './modules/slider.js'
+import calc from './modules/calc.js'
+import cards from './modules/cards.js'
+import forms from './modules/forms.js'
 
 window.addEventListener('DOMContentLoaded', () => {
     tabs()
@@ -16,6 +14,7 @@ window.addEventListener('DOMContentLoaded', () => {
     calc()
     cards()
     forms()
+    console.log('Yes')
    
 
 })

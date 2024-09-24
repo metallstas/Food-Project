@@ -1,4 +1,3 @@
-const { module } = require("../../webpack.config")
 
 function modal() {
     const btnsContactUs = document.querySelectorAll('[data-modal]'),
