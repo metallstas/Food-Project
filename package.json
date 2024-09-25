@@ -7,8 +7,14 @@
   },
   "author": "",
   "license": "ISC",
+  "browserslist": [
+    "> 1%"
+  ],
   "description": "",
   "devDependencies": {
+    "@babel/cli": "^7.25.6",
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.4",
     "html-webpack-plugin": "^5.6.0",
     "json-server": "^0.17.4",
     "webpack": "^5.94.0",
@@ -17,5 +23,8 @@
   "browser": {
     "path": false,
     "stream": false
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.12.1"
   }
 }
