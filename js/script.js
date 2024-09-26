@@ -1,3 +1,4 @@
+import $ from "jquery"
 import tabs from './modules/tabs.js'
 import timer from './modules/timer.js'
 import modal from './modules/modal.js'
@@ -8,7 +9,7 @@ import forms from './modules/forms.js'
 import { openModal } from './modules/modal.js'
 
 window.addEventListener('DOMContentLoaded', () => {
-
+    console.log($('#current'))
     const modalTimerId = setTimeout(() => openModal('.modal', modalTimerId ), 55000)
 
     tabs('.tabheader__item', '.tabcontent', '.tabheader__items', 'tabheader__item_active')
